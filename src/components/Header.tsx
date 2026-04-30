@@ -8,16 +8,16 @@ export default function Header() {
         <motion.div 
           initial={{ opacity: 0, rotate: 0 }}
           animate={{ opacity: 1, rotate: 45 }}
-          className="w-10 h-10 bg-blue-600 flex items-center justify-center rounded-none"
+          className="w-10 h-10 border border-slate-200 flex items-center justify-center rounded-none"
         >
-          <span className="-rotate-45 text-white font-black text-lg">HQ</span>
+          <span className="-rotate-45 font-bold text-lg" style={{ color: 'red' }}>HQ</span>
         </motion.div>
         <div>
           <h1 className="text-2xl font-black tracking-tighter uppercase text-slate-800 leading-none">
-            Haqeeqat AI
+            News Verifier
           </h1>
           <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-1">
-            Verification Protocol
+            Investigative Protocol
           </p>
         </div>
       </div>

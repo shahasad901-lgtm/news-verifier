@@ -3,43 +3,59 @@ import { GoogleGenAI, Type } from "@google/genai";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export enum VerificationStatus {
-  VERIFIED = "[VERIFIED]",
-  FAKE_NEWS = "[FAKE NEWS]",
-  NEEDS_CONFIRMATION = "[NEEDS CONFIRMATION]"
+  REAL = "[REAL]",
+  FAKE = "[FAKE]",
+  MISLEADING = "[MISLEADING]",
+  UNVERIFIED = "[UNVERIFIED]"
 }
 
 export interface VerificationResult {
   heading: string;
   status: VerificationStatus;
-  explanation: string; // Markdown formatted
+  explanation: string; // Markdown formatted reasoning (3 short points)
+  officialSources?: string; // Suggested official sources
   isInternational: boolean;
-  language: 'en' | 'ur';
+  language: 'en' | 'ur' | 'roman-ur';
 }
 
-const SYSTEM_INSTRUCTION = `You are "Haqeeqat AI," a precise, data-driven news verification agent. Your sole purpose is to audit the authenticity of news links or claims without adding personal bias or creative fluff.
+const SYSTEM_INSTRUCTION = `You are "News Verifier," an expert investigative journalist and fact-checker. Your mission is to analyze news headlines or articles provided by the user and determine their authenticity.
 
-VERIFICATION LOGIC & SOURCE MANAGEMENT:
-1. Strict Contextual Search: Use the latest Google Search data to verify claims.
-2. Classification:
-   - [VERIFIED]: Confirmed by reliable data.
-   - [FAKE NEWS]: Proven false or debunked.
-   - [NEEDS_CONFIRMATION]: News cannot be verified at this moment.
-3. Source Reliability: Prioritize official statements and established news organizations.
+ANALYZE:
+Check for clickbait, emotional manipulation, and lack of credible sources.
+
+VERDICT:
+Assign one of the following statuses:
+- [REAL]
+- [FAKE]
+- [MISLEADING]
+- [UNVERIFIED]
+
+EXPLANATION:
+Provide concise reasoning in exactly 3 short points (Markdown list).
+
+SOURCE REQUEST:
+If the news is suspicious (FAKE, MISLEADING, or UNVERIFIED), suggest specific official sources the user should check (e.g., "Check the WHO official portal").
 
 LANGUAGE RULES:
-- If the news input relates to Pakistan (Local): Respond in URDU ONLY.
-- If the news input is International: Respond in ENGLISH ONLY.
-- Do NOT mix languages unless quoting specific source titles.
+Respond in the SAME language the user uses (Urdu, English, or Roman Urdu).
+
+TONE:
+Professional, investigative, unbiased, and helpful.
 
 OUTPUT FORMAT:
-1. Heading: Every response MUST start with the exact Urdu Heading: "حقائق کی جانچ (Haqeeqat AI Audit)"
-2. Status: Assign one of the three statuses.
-3. Explanation: Provide a concise point-by-point reasoning (Markdown list).
-4. If [NEEDS_CONFIRMATION], you MUST output: "Data suggests this news cannot be verified at this moment. Please wait for official confirmation." as the explanation.
+Return a JSON object conforming to the following structure:
+{
+  "heading": "Verification Audit Title",
+  "status": "[REAL] | [FAKE] | [MISLEADING] | [UNVERIFIED]",
+  "explanation": "Markdown list with 3 points",
+  "officialSources": "Specific source recommendation if applicable",
+  "isInternational": boolean,
+  "language": "en | ur | roman-ur"
+}
 
 TECHNICAL PARAMETERS:
 - Temperature: 0.1
-- Tone: Professional, objective, and concise. No creative analysis.`;
+- Tools: Google Search grounding is REQUIRED for every audit.`;
 
 export async function verifyNews(input: string): Promise<VerificationResult> {
   const result = await ai.models.generateContent({
@@ -56,8 +72,9 @@ export async function verifyNews(input: string): Promise<VerificationResult> {
           heading: { type: Type.STRING },
           status: { type: Type.STRING, enum: Object.values(VerificationStatus) },
           explanation: { type: Type.STRING },
+          officialSources: { type: Type.STRING },
           isInternational: { type: Type.BOOLEAN },
-          language: { type: Type.STRING, enum: ['en', 'ur'] }
+          language: { type: Type.STRING, enum: ['en', 'ur', 'roman-ur'] }
         },
         required: ["heading", "status", "explanation", "isInternational", "language"]
       }

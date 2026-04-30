@@ -1,6 +1,6 @@
 {
-  "name": "Haqeeqat AI",
-  "description": "A precise, data-driven news verification agent that audits the authenticity of claims using real-time search grounding.",
+  "name": "News Verifier HQ",
+  "description": "Expert investigative journalist and fact-checker AI for auditing news authenticity.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }

@@ -12,26 +12,33 @@ export default function ResultCard({ result }: ResultCardProps) {
   const isUrdu = result.language === 'ur';
 
   const statusStyles = {
-    [VerificationStatus.VERIFIED]: {
+    [VerificationStatus.REAL]: {
       icon: CheckCircle2,
       color: "text-status-verified",
       bg: "bg-white",
       border: "border-status-verified",
-      label: isUrdu ? "[تصدیق شدہ]" : "[VERIFIED]"
+      label: isUrdu ? "[اصل]" : "[REAL]"
     },
-    [VerificationStatus.FAKE_NEWS]: {
+    [VerificationStatus.FAKE]: {
       icon: AlertTriangle,
       color: "text-status-fake",
       bg: "bg-white",
       border: "border-status-fake",
-      label: isUrdu ? "[جعلی خبر]" : "[FAKE]"
+      label: isUrdu ? "[جعلی]" : "[FAKE]"
     },
-    [VerificationStatus.NEEDS_CONFIRMATION]: {
+    [VerificationStatus.MISLEADING]: {
       icon: HelpCircle,
       color: "text-status-needs",
       bg: "bg-white",
       border: "border-status-needs",
-      label: isUrdu ? "[تصدیق درکار]" : "[PENDING]"
+      label: isUrdu ? "[گمراہ کن]" : "[MISLEADING]"
+    },
+    [VerificationStatus.UNVERIFIED]: {
+      icon: HelpCircle,
+      color: "text-slate-500",
+      bg: "bg-white",
+      border: "border-slate-300",
+      label: isUrdu ? "[غیر تصدیق شدہ]" : "[UNVERIFIED]"
     }
   };
 
@@ -43,21 +50,21 @@ export default function ResultCard({ result }: ResultCardProps) {
       animate={{ opacity: 1 }}
       className="max-w-4xl mx-auto px-6 pb-24"
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 text-black">
         {/* Verdict Banner */}
         <div className={cn(
           "md:col-span-12 bg-white border-2 p-8 flex items-center justify-between brutalist-shadow",
           border
         )}>
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Verification Status</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Verification Verdict</p>
             <h3 className={cn("text-6xl font-black tracking-tighter mt-2", color)}>
               {label}
             </h3>
           </div>
           <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Confidence Score</p>
-            <p className="text-5xl font-mono font-bold text-slate-800 mt-2">98.2%</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Audit Timestamp</p>
+            <p className="text-sm font-mono font-bold text-slate-800 mt-2">{new Date().toLocaleTimeString()}</p>
           </div>
         </div>
 
@@ -69,7 +76,7 @@ export default function ResultCard({ result }: ResultCardProps) {
           )}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-4 h-4 bg-slate-900"></div>
-              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500">Audit Explanation</h4>
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500">Investigative Reasoning</h4>
             </div>
             
             <h3 className="text-2xl font-black uppercase tracking-tight text-slate-900 border-b-2 border-slate-100 pb-4">
@@ -77,13 +84,30 @@ export default function ResultCard({ result }: ResultCardProps) {
             </h3>
 
             <div className={cn(
-              "prose prose-slate prose-sm max-w-none prose-headings:text-slate-900 prose-strong:text-slate-900 leading-relaxed",
+              "prose prose-slate prose-sm max-w-none prose-headings:text-slate-900 prose-strong:text-slate-900 leading-relaxed text-black",
               isUrdu ? "text-right urdu-font text-lg" : "text-left"
             )}>
               <ReactMarkdown>
                 {result.explanation}
               </ReactMarkdown>
             </div>
+
+            {result.officialSources && (
+              <div className="mt-8 pt-6 border-t border-slate-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-4 h-4 bg-blue-600 flex items-center justify-center">
+                    <span className="text-[10px] font-black text-white">i</span>
+                  </div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Recommended Action</h4>
+                </div>
+                <p className={cn(
+                  "text-sm font-semibold text-slate-700 italic",
+                  isUrdu ? "text-right urdu-font" : "text-left"
+                )}>
+                  {result.officialSources}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

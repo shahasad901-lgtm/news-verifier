@@ -69,7 +69,7 @@ export default function SearchSection({ onVerify, isLoading }: SearchSectionProp
               AUDIT NEWS <br /> <span className="text-blue-600">REAL-TIME.</span>
             </h2>
             <p className="text-slate-500 text-lg max-w-md italic leading-snug">
-              "We leverage direct search grounding to separate fact from propaganda using a geometric audit protocol."
+              "We leverage direct search grounding as 'News Verifier HQ' to separate fact from propaganda using a geometric audit protocol."
             </p>
           </div>
 
